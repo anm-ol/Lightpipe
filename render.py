@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import blenderproc as bproc
-import Lightpipe.utils as utils
+import utils
 import random
 random.seed(42)  # For reproducibility
 

@@ -1,3 +1,6 @@
 materials/*
 hdris/*
 __pycache__/
+*.pyc
+*.blend
+*.mp4

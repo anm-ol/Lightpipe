@@ -20,6 +20,7 @@ from utils import (
     get_random_hdri_path,
     get_data_paths,
     generate_orbit_path,
+    generate_camera_path,
     sample_from_list,
     sample_float
 )
@@ -74,11 +75,11 @@ class AssetManager:
         bproc.world.set_world_background_hdr_img(hdri_path)
 
     def load_object(self, obj_path):
-        loaded_objects = bproc.loader.load_obj(obj_path)
+        loaded_objects = bproc.loader.load_blend(obj_path)
         if not loaded_objects:
             raise RuntimeError(f"Failed to load object from {obj_path}")
         main_obj = loaded_objects[0]
-        bbox = main_obj.get_bound_box()
+        bbox = main_obj.get_bound_box() # type: ignore
         max_dim = np.max(np.max(bbox, axis=0) - np.min(bbox, axis=0))
         scale_factor = 2.0 / max_dim
         main_obj.set_scale([scale_factor] * 3)
@@ -97,11 +98,13 @@ class AssetManager:
         return mat
 # --- Pipeline Stages ---
 
-def setup_scene(asset_mgr, obj_path, hdri_path):
+def setup_scene(asset_mgr, obj_path, material_path, hdri_path):
     """Initializes the scene, camera, and static objects."""
     asset_mgr.set_background_hdri(hdri_path)
-    plane = bproc.object.create_primitive("PLANE", size=20)
-
+    plane = bproc.object.create_primitive("PLANE", size=100)
+    material = bproc.loader.load_blend(material_path, data_blocks="materials")
+    material = bproc.material.convert_to_materials(material)
+    plane.add_material(material[0])
     # Correct Camera Setup: Define a location and a point of interest (poi)
     cam_location = np.array([0, -5, 2.5])
     poi = np.array([0, 0, 1]) # Look at the object's location
@@ -119,10 +122,13 @@ def setup_light(asset_mgr, color, intensity, radius=0.15):
     light_sphere.add_material(light_mat)
     return light_sphere
 
-def animate_scene(light_sphere, light_path):
+def animate_scene(light_sphere, light_path, camera_path=None):
     """Sets keyframes for all dynamic objects in the scene."""
     print("  Setting animation keyframes...")
     for frame, light_pos in enumerate(light_path):
+        if camera_path is not None:
+            cam_pos = camera_path[frame]
+            bproc.camera.add_camera_pose(cam_pos, frame=frame)
         light_sphere.set_location(light_pos, frame=frame)
 
 # --- Main Orchestration ---
@@ -135,31 +141,37 @@ def main_pipeline(config_path):
     master_seed = config['project']['seed']
     random.seed(master_seed)
     np.random.seed(master_seed)
+    os.environ['BLENDER_PROC_RANDOM_SEED'] = str(master_seed)
     
     object_paths = get_data_paths(config['assets']['objects_dir'], length=config['settings']['num_videos'])
+    material_paths = get_data_paths(config['assets']['materials_dir'], length=config['settings']['num_videos'])
+    #(num_frames: Unknown, radius: Unknown, center: Unknown = [0, 0, 0],
+    # start_angle: int = 0, end_angle: float = 2 * np.pi) -> list[Unknown]
+    camera_settings = config['settings']['camera_settings']
+    num_frames = config['settings']['frames_per_video']
     
     asset_mgr = AssetManager()
 
+    bproc.renderer.set_render_devices(use_only_cpu=False, desired_gpu_device_type='CUDA', desired_gpu_ids=[0, 1, 2])
+    bproc.renderer.set_max_amount_of_samples(16)
+    bproc.renderer.set_denoiser('OPTIX')
+    bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
+    
+
     for i in range(config['settings']['num_videos']):
         print(f"--- Generating Video {i+1}/{config['settings']['num_videos']} ---")
-        
-        # A. SCENE COMPOSITION (The "Director's" Job)
-        scene_seed = master_seed + i
-        os.environ['BLENDER_PROC_RANDOM_SEED'] = str(scene_seed)
-        random.seed(scene_seed)
-        np.random.seed(scene_seed)
-        
-        bproc.init() # Initialize a clean slate
 
-        # Configure renderer based on your working code
-        bproc.renderer.set_render_devices(use_only_cpu=False, desired_gpu_device_type='CUDA', desired_gpu_ids=[0, 1, 2])
-        bproc.renderer.set_max_amount_of_samples(16)
-        bproc.renderer.set_denoiser('OPTIX')
-        bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
-        bproc.camera.set_resolution(1280, 720) # Set a reasonable resolution
+        bproc.object.delete_multiple(bproc.object.get_all_mesh_objects()) # type: ignore
+
+        height = config['settings']['resolution']['height']
+        width = config['settings']['resolution']['width']
+        bproc.camera.set_resolution(width, height)  # Set camera resolution
 
         # Sample all random parameters for this video
         obj_path = object_paths[i]
+        material_path = material_paths[i]
+        print(f"  Loading object from: {obj_path}")
+        print(f"  Loading material from: {material_path}")
         hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
         #hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
         light_path_config = sample_from_list(config['randomization']['light_paths'])
@@ -169,10 +181,25 @@ def main_pipeline(config_path):
         intensity = sample_float(config['randomization']['light_properties']['intensity_range'])
         light_intensity = intensity
         light_color = [sample_float(color_variation) for _ in range(3)]
+        light_color.append(1.0)  # Ensure the color is in RGBA format
 
         # Create the dynamic light and set its animation path
+        print(hdri_path)
+        scene = setup_scene(asset_mgr, obj_path, material_path, hdri_path)
+        main_obj = scene['main_obj']
+        plane = scene['plane']
+        #material = bproc.loader.load_haven_mat(folder_path=config['assets']['materials_dir'],
+        #                                            return_random_element=True)
+        #plane.add_material(material)
         light_sphere = setup_light(asset_mgr, light_color, light_intensity)
-        animate_scene(light_sphere, light_path)
+        camera_path = generate_camera_path(
+        num_frames=num_frames,
+        radius=camera_settings['orbit_radius'],
+        center=bproc.object.compute_poi([main_obj]),
+        angle_range=camera_settings['angle_range'],
+        camera_height=camera_settings['camera_height']
+    )
+        animate_scene(light_sphere, light_path, camera_path)
         
         # Render all keyframed data into memory
         print("  Rendering animation data...")
@@ -191,4 +218,5 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Lightpipe video generation pipeline.")
     parser.add_argument('--config', type=str, default="configs/configv2.yaml", help="Path to the configuration file")
     args = parser.parse_args()
+    bproc.init()  # Initialize BlenderProc
     main_pipeline(args.config)

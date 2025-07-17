@@ -1,6 +1,7 @@
 import os
 import random
 import numpy as np
+import blenderproc as bproc
 
 def get_random_file_path_from_directory(directory):
     files = os.listdir(directory)
@@ -79,18 +80,18 @@ def generate_light_path(path_type, bbox, light_radius, num_frames, padding=1.1):
         
     return path
 
-def generate_camera_path(num_frames, radius, center=[0,0,0], start_angle=0, end_angle=2*np.pi):
+def generate_camera_path(num_frames, radius, center=[0,0,0], angle_range=[0, 360], camera_height=1.0):
     """Generates a list of camera poses for an orbit path between a start and end angle."""
     poses = []
     # Generate angles from start_angle to end_angle
-    angles = np.linspace(start_angle, end_angle, num_frames)
+    angles = np.linspace(np.radians(angle_range[0]), np.radians(angle_range[1]), num_frames)
 
     for angle in angles:
         # Calculate camera location on the circle
         x = center[0] + radius * np.cos(angle)
         y = center[1] + radius * np.sin(angle)
         # Add some height variation for a more dynamic path
-        z = center[2] + np.sin(angle * 2) * (radius / 4) + 1.0 
+        z = camera_height
         
         location = np.array([x, y, z])
         
@@ -117,6 +118,8 @@ def generate_camera_path(num_frames, radius, center=[0,0,0], start_angle=0, end_
             up,
             -forward
         ]).T
+        
+        rotation_matrix = bproc.camera.rotation_from_forward_vec(forward)
         
         # Combine location and rotation into a 4x4 transformation matrix
         pose = np.eye(4)
@@ -154,6 +157,7 @@ def get_data_paths(data_dir, length):
     all_files = []
     dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
     return random.sample(dirs, length)
+
 
 def get_random_hdri_path(hdri_dir):
     """Gets a random HDRI file path from a directory."""

@@ -1,6 +1,6 @@
 project:
   output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset_v2/"
-  seed: 2025 # A new seed for a new set of results
+  seed: 42 # A new seed for a new set of results
 
 assets:
   # Asset paths are specific to your machine, so they remain unchanged.
@@ -9,16 +9,18 @@ assets:
   hdri_dir: "/mnt/data/anmol/Lightpipe"
 
 settings:
-  num_videos: 20 # Increased number of videos to generate
-  frames_per_video: 60 # Increased frames for smoother animations
+  num_videos: 2 # Increased number of videos to generate
+  frames_per_video: 30 # Increased frames for smoother animations
   resolution:
-    width: 1024
-    height: 1024
+    width: 800
+    height: 400
   # Camera settings can be expanded if you implement dynamic camera paths
   camera_settings:
     type: "static" # For now, reflects the current main.py implementation
-    location: [0, -5, 2.5]
     poi: [0, 0, 1.0] # Point of Interest the camera looks at
+    angle_range: [-30, 30] # Vertical angle range for camera
+    orbit_radius: 8.0 # Radius for camera orbit around the scene
+    camera_height: 2.0 # Height of the camera above the ground
 
 randomization:
   # Each light path is now an object with its own parameters for more control.
