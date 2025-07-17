@@ -1,0 +1,25 @@
+project:
+  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset/"
+  seed: 42 # For reproducibility!
+
+assets:
+  objects_dir: "/mnt/data/anmol/DecorativeModels/"
+  materials_dir: "/mnt/data/anmol/Lightpipe/materials/"
+  hdri_dir: "/mnt/data/anmol/resources/hdris/"
+
+settings:
+  num_videos: 10
+  n_frames: 25
+  camera_settings:
+    type: "orbit"  # Options: "orbit", "figure_eight", "random"
+    orbit_radius: 2.0  # For orbit paths
+    angle_range: [0, 180.0]  # For orbit paths
+    height: 1.0  
+  # ... other settings
+
+randomization:
+  light_paths:
+    - "LEFT_ORBIT"
+    - "RIGHT_ORBIT"
+    - "FIGURE_EIGHT"
+  # ... same as before
