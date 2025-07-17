@@ -1,0 +1,1206 @@
+Directory structure:
+└── Lightpipe/
+    ├── main.py
+    ├── render.py
+    ├── scene.py
+    ├── utils.py
+    ├── configs/
+    │   ├── config.yaml
+    │   └── configv2.yaml
+    └── hdris/
+        ├── abandoned_slipway/
+        │   └── abandoned_slipway_2k.hdr
+        ├── abandoned_tiled_room/
+        │   └── abandoned_tiled_room_2k.hdr
+        ├── auto_service/
+        │   └── auto_service_2k.hdr
+        ├── autumn_forest_02/
+        │   └── autumn_forest_02_2k.hdr
+        ├── autumn_ground/
+        │   └── autumn_ground_2k.hdr
+        ├── ballroom/
+        │   └── ballroom_2k.hdr
+        ├── bell_park_dawn/
+        │   └── bell_park_dawn_2k.hdr
+        ├── brick_factory_02/
+        │   └── brick_factory_02_2k.hdr
+        ├── brown_photostudio_01/
+        │   └── brown_photostudio_01_2k.hdr
+        ├── brown_photostudio_02/
+        │   └── brown_photostudio_02_2k.hdr
+        ├── castel_st_angelo_roof/
+        │   └── castel_st_angelo_roof_2k.hdr
+        ├── christmas_photo_studio_06/
+        │   └── christmas_photo_studio_06_2k.hdr
+        ├── cinema_lobby/
+        │   └── cinema_lobby_2k.hdr
+        ├── circus_maximus_1/
+        │   └── circus_maximus_1_2k.hdr
+        ├── circus_maximus_2/
+        │   └── circus_maximus_2_2k.hdr
+        ├── colorful_studio/
+        │   └── colorful_studio_2k.hdr
+        ├── comfy_cafe/
+        │   └── comfy_cafe_2k.hdr
+        ├── de_balie/
+        │   └── de_balie_2k.hdr
+        ├── drachenfels_cellar/
+        │   └── drachenfels_cellar_2k.hdr
+        ├── drackenstein_quarry_puresky/
+        │   └── drackenstein_quarry_puresky_2k.hdr
+        ├── dresden_moat/
+        │   └── dresden_moat_2k.hdr
+        ├── epping_forest_01/
+        │   └── epping_forest_01_2k.hdr
+        ├── evening_road_01_puresky/
+        │   └── evening_road_01_puresky_2k.hdr
+        ├── fish_eagle_hill/
+        │   └── fish_eagle_hill_2k.hdr
+        ├── floral_tent/
+        │   └── floral_tent_2k.hdr
+        ├── forest_slope/
+        │   └── forest_slope_2k.hdr
+        ├── fouriesburg_mountain_lookout/
+        │   └── fouriesburg_mountain_lookout_2k.hdr
+        ├── goegap_road/
+        │   └── goegap_road_2k.hdr
+        ├── golden_gate_hills/
+        │   └── golden_gate_hills_2k.hdr
+        ├── gothic_manor_01/
+        │   └── gothic_manor_01_2k.hdr
+        ├── greenwich_park/
+        │   └── greenwich_park_2k.hdr
+        ├── hall_of_mammals/
+        │   └── hall_of_mammals_2k.hdr
+        ├── hangar_interior/
+        │   └── hangar_interior_2k.hdr
+        ├── harties_cliff_view/
+        │   └── harties_cliff_view_2k.hdr
+        ├── hikers_cave/
+        │   └── hikers_cave_2k.hdr
+        ├── hilltop_construction/
+        │   └── hilltop_construction_2k.hdr
+        ├── horn-koppe_snow/
+        │   └── horn-koppe_snow_2k.hdr
+        ├── industrial_pipe_and_valve_01/
+        │   └── industrial_pipe_and_valve_01_2k.hdr
+        ├── kart_club/
+        │   └── kart_club_2k.hdr
+        ├── kloppenheim_01_puresky/
+        │   └── kloppenheim_01_puresky_2k.hdr
+        ├── konigsallee/
+        │   └── konigsallee_2k.hdr
+        ├── lago_disola/
+        │   └── lago_disola_2k.hdr
+        ├── learner_park/
+        │   └── learner_park_2k.hdr
+        ├── machine_shop_01/
+        │   └── machine_shop_01_2k.hdr
+        ├── machine_shop_03/
+        │   └── machine_shop_03_2k.hdr
+        ├── minedump_flats/
+        │   └── minedump_flats_2k.hdr
+        ├── missile_launch_facility_01/
+        │   └── missile_launch_facility_01_2k.hdr
+        ├── modern_bathroom/
+        │   └── modern_bathroom_2k.hdr
+        ├── modern_buildings/
+        │   └── modern_buildings_2k.hdr
+        ├── monte_scherbelino/
+        │   └── monte_scherbelino_2k.hdr
+        ├── moonlit_golf/
+        │   └── moonlit_golf_2k.hdr
+        ├── netball_court/
+        │   └── netball_court_2k.hdr
+        ├── nkuhlu/
+        │   └── nkuhlu_2k.hdr
+        ├── overcast_soil_2/
+        │   └── overcast_soil_2_2k.hdr
+        ├── ox_bridge_morning/
+        │   └── ox_bridge_morning_2k.hdr
+        ├── paul_lobe_haus/
+        │   └── paul_lobe_haus_2k.hdr
+        ├── petit_port/
+        │   └── petit_port_2k.hdr
+        ├── pizzo_pernice_puresky/
+        │   └── pizzo_pernice_puresky_2k.hdr
+        ├── quattro_canti/
+        │   └── quattro_canti_2k.hdr
+        ├── qwantani_dawn/
+        │   └── qwantani_dawn_2k.hdr
+        ├── reading_room/
+        │   └── reading_room_2k.hdr
+        ├── rosendal_park_sunset/
+        │   └── rosendal_park_sunset_2k.hdr
+        ├── scythian_tombs/
+        │   └── scythian_tombs_2k.hdr
+        ├── signal_hill_dawn/
+        │   └── signal_hill_dawn_2k.hdr
+        ├── skate_park/
+        │   └── skate_park_2k.hdr
+        ├── small_cathedral/
+        │   └── small_cathedral_2k.hdr
+        ├── small_empty_room_1/
+        │   └── small_empty_room_1_2k.hdr
+        ├── small_rural_road/
+        │   └── small_rural_road_2k.hdr
+        ├── soliltude/
+        │   └── soliltude_2k.hdr
+        ├── studio_small_07/
+        │   └── studio_small_07_2k.hdr
+        ├── studio_small_09/
+        │   └── studio_small_09_2k.hdr
+        ├── stuttgart_hillside/
+        │   └── stuttgart_hillside_2k.hdr
+        ├── stuttgart_suburbs/
+        │   └── stuttgart_suburbs_2k.hdr
+        ├── syferfontein_18d_clear/
+        │   └── syferfontein_18d_clear_2k.hdr
+        ├── tiber_1/
+        │   └── tiber_1_2k.hdr
+        ├── trekker_monument/
+        │   └── trekker_monument_2k.hdr
+        ├── umhlanga_sunrise/
+        │   └── umhlanga_sunrise_2k.hdr
+        ├── venetian_crossroads/
+        │   └── venetian_crossroads_2k.hdr
+        ├── wasteland_clouds_puresky/
+        │   └── wasteland_clouds_puresky_2k.hdr
+        ├── whipple_creek_gazebo/
+        │   └── whipple_creek_gazebo_2k.hdr
+        └── zavelstein/
+            └── zavelstein_2k.hdr
+
+================================================
+FILE: main.py
+================================================
+# main.py
+import blenderproc as bproc
+import yaml
+import numpy as np
+import random
+import sys
+import os
+import shutil
+import subprocess
+import cv2
+import argparse
+
+# Add local path for imports
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(dir_path)
+
+# Import helper functions from the provided utils.py
+from utils import (
+    get_random_object_path,
+    get_random_hdri_path,
+    get_data_paths,
+    generate_orbit_path,
+    sample_from_list,
+    sample_float
+)
+
+# --- Video Rendering Utility (Adapted from your depth.py) ---
+
+def render_to_video_ffmpeg(data, key, output_path, framerate=24):
+    """Renders a specific data key ('colors' or 'depth') to a video file using FFmpeg."""
+    frames = data.get(key)
+    if not frames:
+        print(f"Warning: No data found for key '{key}'. Skipping video generation.")
+        return
+
+    temp_dir = f"temp_frames_{key}_{random.randint(0, 9999)}"
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        # Save frames to temporary directory
+        for i, frame_data in enumerate(frames):
+            frame_path = os.path.join(temp_dir, f"frame_{i:04d}.png")
+            if key == 'colors':
+                # BlenderProc outputs RGB, imwrite needs BGR
+                cv2.imwrite(frame_path, cv2.cvtColor(frame_data, cv2.COLOR_RGB2BGR))
+            elif key == 'depth':
+                # Normalize depth map for visualization
+                depth_frame = frame_data.copy()
+                # Use a sensible max distance for normalization, e.g., 20.0 meters
+                max_dist = 20.0
+                depth_frame[depth_frame > max_dist] = max_dist
+                norm_frame = (depth_frame / max_dist) * 255.0
+                # Invert for better visibility (closer is brighter)
+                cv2.imwrite(frame_path, 255 - norm_frame.astype(np.uint8))
+
+        # Run FFmpeg to create the video
+        ffmpeg_cmd = [
+            "ffmpeg", "-y", "-framerate", str(framerate),
+            "-i", os.path.join(temp_dir, "frame_%04d.png"),
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-loglevel", "error",
+            output_path
+        ]
+        subprocess.run(ffmpeg_cmd, check=True)
+        print(f"  -> Saved {key} video to: {output_path}")
+
+    finally:
+        shutil.rmtree(temp_dir) # Clean up temporary frames
+
+# --- Asset and Scene Management ---
+
+class AssetManager:
+    """A simple stateless manager for handling Blender asset operations."""
+    def set_background_hdri(self, hdri_path):
+        bproc.world.set_world_background_hdr_img(hdri_path)
+
+    def load_object(self, obj_path):
+        loaded_objects = bproc.loader.load_obj(obj_path)
+        if not loaded_objects:
+            raise RuntimeError(f"Failed to load object from {obj_path}")
+        main_obj = loaded_objects[0]
+        bbox = main_obj.get_bound_box()
+        max_dim = np.max(np.max(bbox, axis=0) - np.min(bbox, axis=0))
+        scale_factor = 2.0 / max_dim
+        main_obj.set_scale([scale_factor] * 3)
+        main_obj.set_location([0, 0, 1])
+        return main_obj
+
+    def create_emissive_material(self, color, strength):
+        """
+        Creates and returns a new emissive material.
+        
+        This version is improved to use the dedicated make_emissive() function.
+        """
+        mat = bproc.material.create('EmissiveLightMat')
+        # Use the high-level API function to make the material emissive
+        mat.make_emissive(emission_strength=strength, emission_color=color)
+        return mat
+# --- Pipeline Stages ---
+
+def setup_scene(asset_mgr, obj_path, hdri_path):
+    """Initializes the scene, camera, and static objects."""
+    asset_mgr.set_background_hdri(hdri_path)
+    plane = bproc.object.create_primitive("PLANE", size=20)
+
+    # Correct Camera Setup: Define a location and a point of interest (poi)
+    cam_location = np.array([0, -5, 2.5])
+    poi = np.array([0, 0, 1]) # Look at the object's location
+    rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - cam_location)
+    cam_pose = bproc.math.build_transformation_mat(cam_location, rotation_matrix)
+    bproc.camera.add_camera_pose(cam_pose) # Add a single pose for the static camera
+
+    main_obj = asset_mgr.load_object(obj_path)
+    return {"main_obj": main_obj, "plane": plane}
+
+def setup_light(asset_mgr, color, intensity, radius=0.15):
+    """Creates the dynamic light source for the scene."""
+    light_sphere = bproc.object.create_primitive("SPHERE", radius=radius)
+    light_mat = asset_mgr.create_emissive_material(color, intensity)
+    light_sphere.add_material(light_mat)
+    return light_sphere
+
+def animate_scene(light_sphere, light_path):
+    """Sets keyframes for all dynamic objects in the scene."""
+    print("  Setting animation keyframes...")
+    for frame, light_pos in enumerate(light_path):
+        light_sphere.set_location(light_pos, frame=frame)
+
+# --- Main Orchestration ---
+
+def main_pipeline(config_path):
+    """The main entry point, orchestrating the entire generation process."""
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    
+    master_seed = config['project']['seed']
+    random.seed(master_seed)
+    np.random.seed(master_seed)
+    
+    object_paths = get_data_paths(config['assets']['objects_dir'], length=config['settings']['num_videos'])
+    
+    asset_mgr = AssetManager()
+
+    for i in range(config['settings']['num_videos']):
+        print(f"--- Generating Video {i+1}/{config['settings']['num_videos']} ---")
+        
+        # A. SCENE COMPOSITION (The "Director's" Job)
+        scene_seed = master_seed + i
+        os.environ['BLENDER_PROC_RANDOM_SEED'] = str(scene_seed)
+        random.seed(scene_seed)
+        np.random.seed(scene_seed)
+        
+        bproc.init() # Initialize a clean slate
+
+        # Configure renderer based on your working code
+        bproc.renderer.set_render_devices(use_only_cpu=False, desired_gpu_device_type='CUDA', desired_gpu_ids=[0, 1, 2])
+        bproc.renderer.set_max_amount_of_samples(16)
+        bproc.renderer.set_denoiser('OPTIX')
+        bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
+        bproc.camera.set_resolution(1280, 720) # Set a reasonable resolution
+
+        # Sample all random parameters for this video
+        obj_path = object_paths[i]
+        hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
+        #hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
+        light_path_config = sample_from_list(config['randomization']['light_paths'])
+        light_radius = sample_float(light_path_config['radius_range'])
+        light_path = generate_orbit_path(config['settings']['frames_per_video'], light_radius)
+        color_variation = config['randomization']['light_properties']['color_variation']
+        intensity = sample_float(config['randomization']['light_properties']['intensity_range'])
+        light_intensity = intensity
+        light_color = [sample_float(color_variation) for _ in range(3)]
+
+        # Create the dynamic light and set its animation path
+        light_sphere = setup_light(asset_mgr, light_color, light_intensity)
+        animate_scene(light_sphere, light_path)
+        
+        # Render all keyframed data into memory
+        print("  Rendering animation data...")
+        data = bproc.renderer.render()
+        
+        # Save the rendered data to video files
+        output_base = config['project']['output_base_path']
+        os.makedirs(output_base, exist_ok=True)
+        color_vid_path = os.path.join(output_base, f"{i:04d}_color.mp4")
+        depth_vid_path = os.path.join(output_base, f"{i:04d}_depth.mp4")
+
+        render_to_video_ffmpeg(data, key='colors', output_path=color_vid_path)
+        render_to_video_ffmpeg(data, key='depth', output_path=depth_vid_path)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run the Lightpipe video generation pipeline.")
+    parser.add_argument('--config', type=str, default="configs/configv2.yaml", help="Path to the configuration file")
+    args = parser.parse_args()
+    main_pipeline(args.config)
+
+
+================================================
+FILE: render.py
+================================================
+import os
+import numpy as np
+import blenderproc as bproc
+import Lightpipe.utils as utils
+import random
+random.seed(42)  # For reproducibility
+
+class Pipeline:
+    def __init__(self, config, scene, video_id):
+        self.config = config
+        self.scene = scene # The Scene object
+        self.video_id = video_id
+        self.num_frames = self.config['settings']['n_frames']
+        self.light_types = config['randomization']['light_paths']
+        self.light_properties = config['randomization']['light_properties']
+
+    def run(self):
+        """Generates one complete, randomized video clip."""
+        # 1. Setup the scene objects
+        main_obj, light_sphere, light_mat = self.scene.setup()
+        self.load_camera()
+
+        path_type = random.choice(self.config['randomization']['light_paths'])
+        light_path = utils.generate_light_path(
+            path_type,
+            self.scene.get_bounding_box(),
+            self.light_properties['radius'],
+            self.num_frames,
+            padding=self.config['randomization']['padding']
+        )
+        for i in range(self.num_frames):
+            light_sphere.set_location(i, light_path[i]) 
+        
+        light_color = utils.sample_from_list(self.config['randomization']['light_properties']['color_palette'])
+        light_intensity = utils.sample_float(self.config['randomization']['light_properties']['intensity_range'])
+        light_mat.set_principled_shader_value("Emission", light_color + [1.0])
+        light_mat.set_principled_shader_value("Emission Strength", light_intensity)
+
+        # 3. Animate and render each frame
+        output_base = self.config['project']['output_base_path']
+        rgb_dir = os.path.join(output_base, f"{self.video_id:04d}_rgb")
+        depth_dir = os.path.join(output_base, f"{self.video_id:04d}_depth")
+
+        for frame, light_pos in enumerate(light_path):
+            light_sphere.set_location(frame, light_pos)
+            
+        bproc.renderer.enable_depth_output(activate_antialiasing=False)
+        output = bproc.renderer.render()
+        rgb_data = output['colors']
+        depth_data = output['depth']
+            
+            # Render Depth
+        self.light_sphere = bproc.object.create_primitive("SPHERE", radius=0.15)
+        self.light_mat = bproc.material.create("EmissiveMaterial")
+        self.light_sphere.add_material(self.light_mat)
+
+        return rgb_data, depth_data
+    
+    def load_camera(self):
+        """Load camera settings based on the configuration."""
+        n_frames = self.config['settings']['n_frames']
+        camera_settings = self.config['settings']['camera_settings']
+        camera_type = camera_settings['type']
+        camera_angle_range = camera_settings.get('angle_range', [0, 180.0])
+        camera_height = camera_settings.get('height', 1.0)
+        orbit_radius = camera_settings.get('orbit_radius', 2.0)
+        centre = self.scene.get_center()
+        if camera_settings['type'] == 'orbit':
+            camera_path = utils.generate_camera_path(n_frames, orbit_radius, centre,
+                                                     camera_angle_range[0], camera_angle_range[1])
+            for i in range(n_frames):
+                bproc.camera.add_camera_pose(camera_path[i], i)
+
+
+
+================================================
+FILE: scene.py
+================================================
+import blenderproc as bproc
+from Lightpipe.utils import get_random_file_path_from_directory
+
+class Scene:
+    def __init__(self, config, asset_path):
+        self.config = config
+        self.asset_path = asset_path  # Path to the asset files
+        self.main_obj = bproc.loader.load_blend(asset_path[0])
+        self.material = bproc.loader.load_haven_mat(folder_path=config['asset']['materials_dir'],
+                                                    return_random_element=True)
+        self.hdri = bproc.world.set_world_background_hdr_img(asset_path[2])
+    
+    def setup(self, asset_path):
+        """Loads main object, sets up camera and plane."""
+        # Create plane
+        l = [self.material]
+        self.plane = bproc.object.create_primitive("PLANE", size=20)
+        self.plane.set_location([0, 0, 0])
+        self.plane.add_material(self.material)
+        # Create light sphere geometry
+        self.light_sphere = bproc.object.create_primitive("SPHERE", radius=0.15)
+        self.light_mat = bproc.material.create("EmissiveMaterial")
+        self.light_sphere.add_material(self.light_mat)
+
+        return self.main_obj, self.light_sphere, self.light_mat
+
+
+================================================
+FILE: utils.py
+================================================
+import os
+import random
+import numpy as np
+
+def get_random_file_path_from_directory(directory):
+    files = os.listdir(directory)
+    file = random.choice(files)
+    return os.path.join(directory, file, file+'_2k.blend')
+
+def generate_orbit_path(num_frames, radius, axis=[0,0,1]):
+    """Generates a list of 3D points for an orbit."""
+    path = []
+    for i in range(num_frames):
+        angle = 2 * np.pi * (i / (num_frames - 1))
+        x = radius * np.cos(angle)
+        y = radius * np.sin(angle)
+        path.append(np.array([x, y, 1.0])) # Simple horizontal orbit
+    return path
+
+
+def generate_light_path(path_type, bbox, light_radius, num_frames, padding=1.1):
+    """
+    Generates a list of 3D coordinates for a light path around a bounding box.
+
+    Args:
+        path_type (str): The type of path ("LEFT_ORBIT", "RIGHT_ORBIT", "FIGURE_EIGHT").
+        bbox (list or np.ndarray): The bounding box of the center object,
+                                   formatted as [min_x, min_y, min_z, max_x, max_y, max_z].
+        light_radius (float): The radius of the light sphere itself.
+        num_frames (int): The number of points to generate for the path.
+        padding (float): A multiplier for additional clearance. 1.1 means 10% extra space.
+
+    Returns:
+        list: A list of 3D numpy arrays representing the path.
+    """
+    # 1. Calculate the center of the bounding box
+    center = np.array([
+        (bbox[0] + bbox[3]) / 2,
+        (bbox[1] + bbox[4]) / 2,
+        (bbox[2] + bbox[5]) / 2
+    ])
+
+    # 2. Calculate the "radius" of the bounding box (center to a corner)
+    object_extent_vector = np.array([bbox[3], bbox[4], bbox[5]]) - center
+    object_radius = np.linalg.norm(object_extent_vector)
+
+    # 3. Define the final orbit radius for the path's center
+    orbit_radius = (object_radius + light_radius) * padding
+
+    # --- Path generation logic ---
+    path = []
+    angles = np.linspace(0, 2 * np.pi, num_frames, endpoint=False)
+
+    if path_type == "LEFT_ORBIT":
+        for angle in angles:
+            x = center[0] + orbit_radius * np.cos(angle)
+            y = center[1] + orbit_radius * np.sin(angle)
+            z = center[2]
+            path.append(np.array([x, y, z]))
+
+    elif path_type == "RIGHT_ORBIT":
+        for angle in angles:
+            x = center[0] + orbit_radius * np.cos(-angle)
+            y = center[1] + orbit_radius * np.sin(-angle)
+            z = center[2]
+            path.append(np.array([x, y, z]))
+
+    elif path_type == "FIGURE_EIGHT":
+        # This now generates a 3D, non-intersecting figure-eight path.
+        for angle in angles:
+            x = center[0] + orbit_radius * np.cos(angle)
+            y = center[1] + orbit_radius * np.sin(2 * angle) / 2
+            # THE KEY CHANGE IS HERE: Z now oscillates to avoid collision.
+            z = center[2] + orbit_radius * np.sin(angle) / 2
+            path.append(np.array([x, y, z]))
+            
+    else:
+        raise ValueError(f"Unknown light path type: {path_type}")
+        
+    return path
+
+def generate_camera_path(num_frames, radius, center=[0,0,0], start_angle=0, end_angle=2*np.pi):
+    """Generates a list of camera poses for an orbit path between a start and end angle."""
+    poses = []
+    # Generate angles from start_angle to end_angle
+    angles = np.linspace(start_angle, end_angle, num_frames)
+
+    for angle in angles:
+        # Calculate camera location on the circle
+        x = center[0] + radius * np.cos(angle)
+        y = center[1] + radius * np.sin(angle)
+        # Add some height variation for a more dynamic path
+        z = center[2] + np.sin(angle * 2) * (radius / 4) + 1.0 
+        
+        location = np.array([x, y, z])
+        
+        # Calculate rotation to look at the center point
+        # This requires a function similar to bproc.camera.rotation_from_forward_vec
+        # We'll simulate this by creating a look_at matrix.
+        # Note: This is a simplified look_at calculation. A full implementation
+        # would handle the 'up' vector more robustly.
+        forward = np.array(center) - location
+        forward /= np.linalg.norm(forward)
+        
+        # Handle cases where forward is collinear with the up vector
+        if np.allclose(np.abs(np.dot(forward, [0, 0, 1])), 1.0):
+            # if looking straight up or down, use a different 'right' vector
+            right = np.cross([0, 1, 0], forward)
+        else:
+            right = np.cross([0, 0, 1], forward)
+        right /= np.linalg.norm(right)
+        
+        up = np.cross(forward, right)
+        
+        rotation_matrix = np.array([
+            right,
+            up,
+            -forward
+        ]).T
+        
+        # Combine location and rotation into a 4x4 transformation matrix
+        pose = np.eye(4)
+        pose[:3, :3] = rotation_matrix
+        pose[:3, 3] = location
+        poses.append(pose)
+        
+    return poses
+
+def generate_linear_path(num_frames, start_pos, end_pos):
+    """Generates a list of 3D points for a linear path."""
+    return [start_pos + (end_pos - start_pos) * (i / (num_frames - 1)) for i in range(num_frames)]
+
+# generator/sampling.py
+def sample_float(value_range):
+    """Samples a float within a given [min, max] range."""
+    return random.uniform(value_range[0], value_range[1])
+
+def sample_vector(value_range):
+    """Samples a 3D vector within a given [min_xyz, max_xyz] bounding box."""
+    return np.random.uniform(value_range[0], value_range[1])
+
+def sample_from_list(a_list):
+    """Picks a random element from a list."""
+    return random.choice(a_list)
+
+def get_random_object_path(objects_dir):
+    """Gets a random .obj file path from a directory."""
+    obj_files = [f for f in os.listdir(objects_dir) if f.endswith('.obj')]
+    if not obj_files:
+        raise ValueError(f"No .obj files found in {objects_dir}")
+    return os.path.join(objects_dir, random.choice(obj_files))
+
+def get_data_paths(data_dir, length):
+    all_files = []
+    dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    return random.sample(dirs, length)
+
+def get_random_hdri_path(hdri_dir):
+    """Gets a random HDRI file path from a directory."""
+    hdri_files = [f for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
+    if not hdri_files:
+        raise ValueError(f"No .hdr files found in {hdri_dir}")
+    return os.path.join(hdri_dir, random.choice(hdri_files))
+
+
+================================================
+FILE: configs/config.yaml
+================================================
+project:
+  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset/"
+  seed: 42 # For reproducibility!
+
+assets:
+  objects_dir: "/mnt/data/anmol/DecorativeModels/"
+  materials_dir: "/mnt/data/anmol/Lightpipe/materials/"
+  hdri_dir: "/mnt/data/anmol/resources/hdris/"
+
+settings:
+  num_videos: 10
+  n_frames: 25
+  camera_settings:
+    type: "orbit"  # Options: "orbit", "figure_eight", "random"
+    orbit_radius: 2.0  # For orbit paths
+    angle_range: [0, 180.0]  # For orbit paths
+    height: 1.0  
+  # ... other settings
+
+randomization:
+  light_paths:
+    - "LEFT_ORBIT"
+    - "RIGHT_ORBIT"
+    - "FIGURE_EIGHT"
+  # ... same as before
+
+
+================================================
+FILE: configs/configv2.yaml
+================================================
+project:
+  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset_v2/"
+  seed: 2025 # A new seed for a new set of results
+
+assets:
+  # Asset paths are specific to your machine, so they remain unchanged.
+  objects_dir: "/mnt/data/anmol/DecorativeModels/"
+  materials_dir: "/mnt/data/anmol/Lightpipe/materials/"
+  hdri_dir: "/mnt/data/anmol/Lightpipe"
+
+settings:
+  num_videos: 20 # Increased number of videos to generate
+  frames_per_video: 60 # Increased frames for smoother animations
+  resolution:
+    width: 1024
+    height: 1024
+  # Camera settings can be expanded if you implement dynamic camera paths
+  camera_settings:
+    type: "static" # For now, reflects the current main.py implementation
+    location: [0, -5, 2.5]
+    poi: [0, 0, 1.0] # Point of Interest the camera looks at
+
+randomization:
+  # Each light path is now an object with its own parameters for more control.
+  light_paths:
+    - name: "LEFT_ORBIT"
+      radius_range: [2.0, 3.5] # Sample a radius from this range
+    - name: "RIGHT_ORBIT"
+      radius_range: [2.5, 4.0]
+    - name: "FIGURE_EIGHT"
+      radius_range: [3.0, 4.5]
+      # You could add more parameters here, like height variation
+      height_variation: 0.5 
+  light_properties:
+    intensity_range: [1000, 2000] # Range for light intensity
+    color_variation: [0.8, 1.2] # Variation factor for light color
+
+  # New
+
+
+================================================
+FILE: hdris/abandoned_slipway/abandoned_slipway_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/abandoned_tiled_room/abandoned_tiled_room_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/auto_service/auto_service_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/autumn_forest_02/autumn_forest_02_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/autumn_ground/autumn_ground_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/ballroom/ballroom_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/bell_park_dawn/bell_park_dawn_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/brick_factory_02/brick_factory_02_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/brown_photostudio_01/brown_photostudio_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/brown_photostudio_02/brown_photostudio_02_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/castel_st_angelo_roof/castel_st_angelo_roof_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/christmas_photo_studio_06/christmas_photo_studio_06_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/cinema_lobby/cinema_lobby_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/circus_maximus_1/circus_maximus_1_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/circus_maximus_2/circus_maximus_2_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/colorful_studio/colorful_studio_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/comfy_cafe/comfy_cafe_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/de_balie/de_balie_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/drachenfels_cellar/drachenfels_cellar_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/drackenstein_quarry_puresky/drackenstein_quarry_puresky_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/dresden_moat/dresden_moat_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/epping_forest_01/epping_forest_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/evening_road_01_puresky/evening_road_01_puresky_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/fish_eagle_hill/fish_eagle_hill_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/floral_tent/floral_tent_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/forest_slope/forest_slope_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/fouriesburg_mountain_lookout/fouriesburg_mountain_lookout_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/goegap_road/goegap_road_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/golden_gate_hills/golden_gate_hills_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/gothic_manor_01/gothic_manor_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/greenwich_park/greenwich_park_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/hall_of_mammals/hall_of_mammals_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/hangar_interior/hangar_interior_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/harties_cliff_view/harties_cliff_view_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/hikers_cave/hikers_cave_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/hilltop_construction/hilltop_construction_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/horn-koppe_snow/horn-koppe_snow_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/industrial_pipe_and_valve_01/industrial_pipe_and_valve_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/kart_club/kart_club_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/kloppenheim_01_puresky/kloppenheim_01_puresky_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/konigsallee/konigsallee_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/lago_disola/lago_disola_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/learner_park/learner_park_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/machine_shop_01/machine_shop_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/machine_shop_03/machine_shop_03_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/minedump_flats/minedump_flats_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/missile_launch_facility_01/missile_launch_facility_01_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/modern_bathroom/modern_bathroom_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/modern_buildings/modern_buildings_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/monte_scherbelino/monte_scherbelino_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/moonlit_golf/moonlit_golf_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/netball_court/netball_court_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/nkuhlu/nkuhlu_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/overcast_soil_2/overcast_soil_2_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/ox_bridge_morning/ox_bridge_morning_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/paul_lobe_haus/paul_lobe_haus_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/petit_port/petit_port_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/pizzo_pernice_puresky/pizzo_pernice_puresky_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/quattro_canti/quattro_canti_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/qwantani_dawn/qwantani_dawn_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/reading_room/reading_room_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/rosendal_park_sunset/rosendal_park_sunset_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/scythian_tombs/scythian_tombs_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/signal_hill_dawn/signal_hill_dawn_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/skate_park/skate_park_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/small_cathedral/small_cathedral_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/small_empty_room_1/small_empty_room_1_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/small_rural_road/small_rural_road_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/soliltude/soliltude_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/studio_small_07/studio_small_07_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/studio_small_09/studio_small_09_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/stuttgart_hillside/stuttgart_hillside_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/stuttgart_suburbs/stuttgart_suburbs_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/syferfontein_18d_clear/syferfontein_18d_clear_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/tiber_1/tiber_1_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/trekker_monument/trekker_monument_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/umhlanga_sunrise/umhlanga_sunrise_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/venetian_crossroads/venetian_crossroads_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/wasteland_clouds_puresky/wasteland_clouds_puresky_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/whipple_creek_gazebo/whipple_creek_gazebo_2k.hdr
+================================================
+[Non-text file]
+
+
+================================================
+FILE: hdris/zavelstein/zavelstein_2k.hdr
+================================================
+[Non-text file]
+

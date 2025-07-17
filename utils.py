@@ -149,3 +149,15 @@ def get_random_object_path(objects_dir):
     if not obj_files:
         raise ValueError(f"No .obj files found in {objects_dir}")
     return os.path.join(objects_dir, random.choice(obj_files))
+
+def get_data_paths(data_dir, length):
+    all_files = []
+    dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    return random.sample(dirs, length)
+
+def get_random_hdri_path(hdri_dir):
+    """Gets a random HDRI file path from a directory."""
+    hdri_files = [f for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
+    if not hdri_files:
+        raise ValueError(f"No .hdr files found in {hdri_dir}")
+    return os.path.join(hdri_dir, random.choice(hdri_files))

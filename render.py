@@ -44,17 +44,17 @@ class Pipeline:
         for frame, light_pos in enumerate(light_path):
             light_sphere.set_location(frame, light_pos)
             
-            bproc.renderer.enable_depth_output(activate_antialiasing=False)
-            output = bproc.renderer.render()
-            rgb_data = output['colors']
-            depth_data = output['depth']
+        bproc.renderer.enable_depth_output(activate_antialiasing=False)
+        output = bproc.renderer.render()
+        rgb_data = output['colors']
+        depth_data = output['depth']
             
             # Render Depth
         self.light_sphere = bproc.object.create_primitive("SPHERE", radius=0.15)
         self.light_mat = bproc.material.create("EmissiveMaterial")
         self.light_sphere.add_material(self.light_mat)
 
-        return self.main_obj, self.light_sphere, self.light_mat
+        return rgb_data, depth_data
     
     def load_camera(self):
         """Load camera settings based on the configuration."""
