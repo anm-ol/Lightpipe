@@ -5,9 +5,6 @@ import numpy as np
 import random
 import sys
 import os
-import shutil
-import subprocess
-import cv2
 import argparse
 
 # Add local path for imports
@@ -15,57 +12,10 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path)
 
 # Import helper functions from the provided utils.py
-from utils import (
-    get_random_object_path,
-    get_random_hdri_path,
-    get_data_paths,
-    generate_orbit_path,
-    generate_camera_path,
-    sample_from_list,
-    sample_float
-)
+from utils import *
 
 # --- Video Rendering Utility (Adapted from your depth.py) ---
 
-def render_to_video_ffmpeg(data, key, output_path, framerate=24):
-    """Renders a specific data key ('colors' or 'depth') to a video file using FFmpeg."""
-    frames = data.get(key)
-    if not frames:
-        print(f"Warning: No data found for key '{key}'. Skipping video generation.")
-        return
-
-    temp_dir = f"temp_frames_{key}_{random.randint(0, 9999)}"
-    os.makedirs(temp_dir, exist_ok=True)
-    
-    try:
-        # Save frames to temporary directory
-        for i, frame_data in enumerate(frames):
-            frame_path = os.path.join(temp_dir, f"frame_{i:04d}.png")
-            if key == 'colors':
-                # BlenderProc outputs RGB, imwrite needs BGR
-                cv2.imwrite(frame_path, cv2.cvtColor(frame_data, cv2.COLOR_RGB2BGR))
-            elif key == 'depth':
-                # Normalize depth map for visualization
-                depth_frame = frame_data.copy()
-                # Use a sensible max distance for normalization, e.g., 20.0 meters
-                max_dist = 20.0
-                depth_frame[depth_frame > max_dist] = max_dist
-                norm_frame = (depth_frame / max_dist) * 255.0
-                # Invert for better visibility (closer is brighter)
-                cv2.imwrite(frame_path, 255 - norm_frame.astype(np.uint8))
-
-        # Run FFmpeg to create the video
-        ffmpeg_cmd = [
-            "ffmpeg", "-y", "-framerate", str(framerate),
-            "-i", os.path.join(temp_dir, "frame_%04d.png"),
-            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-loglevel", "error",
-            output_path
-        ]
-        subprocess.run(ffmpeg_cmd, check=True)
-        print(f"  -> Saved {key} video to: {output_path}")
-
-    finally:
-        shutil.rmtree(temp_dir) # Clean up temporary frames
 
 # --- Asset and Scene Management ---
 
@@ -104,15 +54,11 @@ def setup_scene(asset_mgr, obj_path, material_path, hdri_path):
     plane = bproc.object.create_primitive("PLANE", size=100)
     material = bproc.loader.load_blend(material_path, data_blocks="materials")
     material = bproc.material.convert_to_materials(material)
-    plane.add_material(material[0])
-    # Correct Camera Setup: Define a location and a point of interest (poi)
-    cam_location = np.array([0, -5, 2.5])
-    poi = np.array([0, 0, 1]) # Look at the object's location
-    rotation_matrix = bproc.camera.rotation_from_forward_vec(poi - cam_location)
-    cam_pose = bproc.math.build_transformation_mat(cam_location, rotation_matrix)
-    bproc.camera.add_camera_pose(cam_pose) # Add a single pose for the static camera
+    plane.add_material(material[0]) # type: ignore
 
     main_obj = asset_mgr.load_object(obj_path)
+    bbox = main_obj.get_bound_box() 
+    
     return {"main_obj": main_obj, "plane": plane}
 
 def setup_light(asset_mgr, color, intensity, radius=0.15):
@@ -143,8 +89,9 @@ def main_pipeline(config_path):
     np.random.seed(master_seed)
     os.environ['BLENDER_PROC_RANDOM_SEED'] = str(master_seed)
     
-    object_paths = get_data_paths(config['assets']['objects_dir'], length=config['settings']['num_videos'])
-    material_paths = get_data_paths(config['assets']['materials_dir'], length=config['settings']['num_videos'])
+    num_videos = config['settings']['num_videos']
+    object_paths = get_data_paths(config['assets']['objects_dir'], length=num_videos)
+    material_paths = get_data_paths(config['assets']['materials_dir'], length=num_videos)
     #(num_frames: Unknown, radius: Unknown, center: Unknown = [0, 0, 0],
     # start_angle: int = 0, end_angle: float = 2 * np.pi) -> list[Unknown]
     camera_settings = config['settings']['camera_settings']
@@ -158,8 +105,8 @@ def main_pipeline(config_path):
     bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
     
 
-    for i in range(config['settings']['num_videos']):
-        print(f"--- Generating Video {i+1}/{config['settings']['num_videos']} ---")
+    for i in range(num_videos):
+        print(f"--- Generating Video {i+1}/{num_videos} ---")
 
         bproc.object.delete_multiple(bproc.object.get_all_mesh_objects()) # type: ignore
 
@@ -174,11 +121,11 @@ def main_pipeline(config_path):
         print(f"  Loading material from: {material_path}")
         hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
         #hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
-        light_path_config = sample_from_list(config['randomization']['light_paths'])
-        light_radius = sample_float(light_path_config['radius_range'])
-        light_path = generate_orbit_path(config['settings']['frames_per_video'], light_radius)
-        color_variation = config['randomization']['light_properties']['color_variation']
-        intensity = sample_float(config['randomization']['light_properties']['intensity_range'])
+        rand = config['randomization']
+        light_radius = sample_float(rand['orbit_radius_range'])
+        path_type = sample_from_list(rand['path_types'])
+        color_variation = rand['light_properties']['color_variation']
+        intensity = sample_float(rand['light_properties']['intensity_range'])
         light_intensity = intensity
         light_color = [sample_float(color_variation) for _ in range(3)]
         light_color.append(1.0)  # Ensure the color is in RGBA format
@@ -192,6 +139,8 @@ def main_pipeline(config_path):
         #                                            return_random_element=True)
         #plane.add_material(material)
         light_sphere = setup_light(asset_mgr, light_color, light_intensity)
+        light_path = generate_light_path(path_type, main_obj.get_bound_box(), light_radius, num_frames)
+        print(len(light_path), light_path[0], light_path[-1])
         camera_path = generate_camera_path(
         num_frames=num_frames,
         radius=camera_settings['orbit_radius'],

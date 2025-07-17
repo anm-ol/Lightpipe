@@ -1,7 +1,51 @@
 import os
 import random
+import shutil
+import subprocess
+import cv2
 import numpy as np
 import blenderproc as bproc
+
+def render_to_video_ffmpeg(data, key, output_path, framerate=24):
+    """Renders a specific data key ('colors' or 'depth') to a video file using FFmpeg."""
+    frames = data.get(key)
+    if not frames:
+        print(f"Warning: No data found for key '{key}'. Skipping video generation.")
+        return
+
+    temp_dir = f"temp_frames_{key}_{random.randint(0, 9999)}"
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        # Save frames to temporary directory
+        for i, frame_data in enumerate(frames):
+            frame_path = os.path.join(temp_dir, f"frame_{i:04d}.png")
+            if key == 'colors':
+                # BlenderProc outputs RGB, imwrite needs BGR
+                cv2.imwrite(frame_path, cv2.cvtColor(frame_data, cv2.COLOR_RGB2BGR))
+            elif key == 'depth':
+                # Normalize depth map for visualization
+                depth_frame = frame_data.copy()
+                # Use a sensible max distance for normalization, e.g., 20.0 meters
+                max_dist = 20.0
+                depth_frame[depth_frame > max_dist] = max_dist
+                norm_frame = (depth_frame / max_dist) * 255.0
+                # Invert for better visibility (closer is brighter)
+                cv2.imwrite(frame_path, 255 - norm_frame.astype(np.uint8))
+
+        # Run FFmpeg to create the video
+        ffmpeg_cmd = [
+            "ffmpeg", "-y", "-framerate", str(framerate),
+            "-i", os.path.join(temp_dir, "frame_%04d.png"),
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-loglevel", "error",
+            output_path
+        ]
+        subprocess.run(ffmpeg_cmd, check=True)
+        print(f"  -> Saved {key} video to: {output_path}")
+
+    finally:
+        shutil.rmtree(temp_dir) # Clean up temporary frames
+
 
 def get_random_file_path_from_directory(directory):
     files = os.listdir(directory)
@@ -19,67 +63,57 @@ def generate_orbit_path(num_frames, radius, axis=[0,0,1]):
     return path
 
 
+import numpy as np
+
 def generate_light_path(path_type, bbox, light_radius, num_frames, padding=1.1):
     """
     Generates a list of 3D coordinates for a light path around a bounding box.
 
     Args:
         path_type (str): The type of path ("LEFT_ORBIT", "RIGHT_ORBIT", "FIGURE_EIGHT").
-        bbox (list or np.ndarray): The bounding box of the center object,
-                                   formatted as [min_x, min_y, min_z, max_x, max_y, max_z].
+        bbox (np.ndarray): The 8x3 array of the object's bounding box corner coordinates.
         light_radius (float): The radius of the light sphere itself.
         num_frames (int): The number of points to generate for the path.
         padding (float): A multiplier for additional clearance. 1.1 means 10% extra space.
 
     Returns:
-        list: A list of 3D numpy arrays representing the path.
+        np.ndarray: A NumPy array of shape (num_frames, 3) representing the path.
     """
-    # 1. Calculate the center of the bounding box
-    center = np.array([
-        (bbox[0] + bbox[3]) / 2,
-        (bbox[1] + bbox[4]) / 2,
-        (bbox[2] + bbox[5]) / 2
-    ])
+    # 1. Calculate the center by taking the mean of all 8 corner points.
+    center = np.mean(bbox, axis=0)
 
-    # 2. Calculate the "radius" of the bounding box (center to a corner)
-    object_extent_vector = np.array([bbox[3], bbox[4], bbox[5]]) - center
-    object_radius = np.linalg.norm(object_extent_vector)
+    # 2. Calculate the "radius" of the bounding box by finding the distance
+    #    from the center to the farthest corner point.
+    distances = np.linalg.norm(bbox - center, axis=1)
+    object_radius = np.max(distances)
 
     # 3. Define the final orbit radius for the path's center
     orbit_radius = (object_radius + light_radius) * padding
 
-    # --- Path generation logic ---
-    path = []
+    # --- Path generation logic (Vectorized) ---
     angles = np.linspace(0, 2 * np.pi, num_frames, endpoint=False)
 
     if path_type == "LEFT_ORBIT":
-        for angle in angles:
-            x = center[0] + orbit_radius * np.cos(angle)
-            y = center[1] + orbit_radius * np.sin(angle)
-            z = center[2]
-            path.append(np.array([x, y, z]))
+        x = center[0] + orbit_radius * np.cos(angles)
+        y = center[1] + orbit_radius * np.sin(angles)
+        z = np.full(num_frames, center[2])
 
     elif path_type == "RIGHT_ORBIT":
-        for angle in angles:
-            x = center[0] + orbit_radius * np.cos(-angle)
-            y = center[1] + orbit_radius * np.sin(-angle)
-            z = center[2]
-            path.append(np.array([x, y, z]))
+        x = center[0] + orbit_radius * np.cos(-angles)
+        y = center[1] + orbit_radius * np.sin(-angles)
+        z = np.full(num_frames, center[2])
 
     elif path_type == "FIGURE_EIGHT":
-        # This now generates a 3D, non-intersecting figure-eight path.
-        for angle in angles:
-            x = center[0] + orbit_radius * np.cos(angle)
-            y = center[1] + orbit_radius * np.sin(2 * angle) / 2
-            # THE KEY CHANGE IS HERE: Z now oscillates to avoid collision.
-            z = center[2] + orbit_radius * np.sin(angle) / 2
-            path.append(np.array([x, y, z]))
-            
+        x = center[0] + orbit_radius * np.cos(angles)
+        y = center[1] + orbit_radius * np.sin(2 * angles) / 2
+        z = center[2] + orbit_radius * np.sin(angles) / 2
+
     else:
         raise ValueError(f"Unknown light path type: {path_type}")
-        
-    return path
 
+    # Stack the x, y, z arrays into a single (num_frames, 3) array
+    return np.column_stack((x, y, z))
+    # Stack the x, y, z
 def generate_camera_path(num_frames, radius, center=[0,0,0], angle_range=[0, 360], camera_height=1.0):
     """Generates a list of camera poses for an orbit path between a start and end angle."""
     poses = []

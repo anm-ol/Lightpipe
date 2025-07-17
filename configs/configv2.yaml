@@ -9,11 +9,11 @@ assets:
   hdri_dir: "/mnt/data/anmol/Lightpipe"
 
 settings:
-  num_videos: 2 # Increased number of videos to generate
-  frames_per_video: 30 # Increased frames for smoother animations
+  num_videos: 50 # Increased number of videos to generate
+  frames_per_video: 77 # Increased frames for smoother animations
   resolution:
-    width: 800
-    height: 400
+    width: 1200
+    height: 800
   # Camera settings can be expanded if you implement dynamic camera paths
   camera_settings:
     type: "static" # For now, reflects the current main.py implementation
@@ -24,17 +24,13 @@ settings:
 
 randomization:
   # Each light path is now an object with its own parameters for more control.
-  light_paths:
-    - name: "LEFT_ORBIT"
-      radius_range: [2.0, 3.5] # Sample a radius from this range
-    - name: "RIGHT_ORBIT"
-      radius_range: [2.5, 4.0]
-    - name: "FIGURE_EIGHT"
-      radius_range: [3.0, 4.5]
+  path_types:
+    - "LEFT_ORBIT"
+    - "RIGHT_ORBIT"
+    - "FIGURE_EIGHT"
       # You could add more parameters here, like height variation
-      height_variation: 0.5 
+  orbit_radius_range: [1.0, 1.5] # Range for orbit radius
+  height_variation: 0.5
   light_properties:
     intensity_range: [1000, 2000] # Range for light intensity
     color_variation: [0.8, 1.2] # Variation factor for light color
-
-  # New
