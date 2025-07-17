@@ -58,13 +58,19 @@ def setup_scene(asset_mgr, obj_path, material_path, hdri_path):
 
     main_obj = asset_mgr.load_object(obj_path)
     bbox = main_obj.get_bound_box() 
-    
+    # Ground the object to the plane by adjusting its z-coordinate
+    min_z = np.min(bbox[:, 2])
+    location = main_obj.get_location()
+    offset = -0.3
+    plane.set_location([0, 0, offset])
+    main_obj.set_location([location[0], location[1], location[2] - min_z + offset])
     return {"main_obj": main_obj, "plane": plane}
 
 def setup_light(asset_mgr, color, intensity, radius=0.15):
     """Creates the dynamic light source for the scene."""
     light_sphere = bproc.object.create_primitive("SPHERE", radius=radius)
     light_mat = asset_mgr.create_emissive_material(color, intensity)
+    
     light_sphere.add_material(light_mat)
     return light_sphere
 
@@ -119,32 +125,31 @@ def main_pipeline(config_path):
         material_path = material_paths[i]
         print(f"  Loading object from: {obj_path}")
         print(f"  Loading material from: {material_path}")
-        hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
+        if os.path.exists(os.path.join(obj_path, 'hdris')):
+            hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
+        else:
+            hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
         #hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
         rand = config['randomization']
         light_radius = sample_float(rand['orbit_radius_range'])
         path_type = sample_from_list(rand['path_types'])
         color_variation = rand['light_properties']['color_variation']
         intensity = sample_float(rand['light_properties']['intensity_range'])
-        light_intensity = intensity
-        light_color = [sample_float(color_variation) for _ in range(3)]
-        light_color.append(1.0)  # Ensure the color is in RGBA format
 
         # Create the dynamic light and set its animation path
         print(hdri_path)
         scene = setup_scene(asset_mgr, obj_path, material_path, hdri_path)
         main_obj = scene['main_obj']
         plane = scene['plane']
-        #material = bproc.loader.load_haven_mat(folder_path=config['assets']['materials_dir'],
-        #                                            return_random_element=True)
-        #plane.add_material(material)
-        light_sphere = setup_light(asset_mgr, light_color, light_intensity)
+
+        light_sphere = setup_light(asset_mgr, sample_color([0.3, 1.0]), intensity)
         light_path = generate_light_path(path_type, main_obj.get_bound_box(), light_radius, num_frames)
         print(len(light_path), light_path[0], light_path[-1])
+        poi = bproc.object.compute_poi([main_obj]) + [0, 0, 0.8]
         camera_path = generate_camera_path(
         num_frames=num_frames,
         radius=camera_settings['orbit_radius'],
-        center=bproc.object.compute_poi([main_obj]),
+        center=poi,
         angle_range=camera_settings['angle_range'],
         camera_height=camera_settings['camera_height']
     )
@@ -165,7 +170,7 @@ def main_pipeline(config_path):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Lightpipe video generation pipeline.")
-    parser.add_argument('--config', type=str, default="configs/configv2.yaml", help="Path to the configuration file")
+    parser.add_argument('--config', type=str, default="configs/configv1.yaml", help="Path to the configuration file")
     args = parser.parse_args()
     bproc.init()  # Initialize BlenderProc
     main_pipeline(args.config)

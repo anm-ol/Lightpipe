@@ -47,6 +47,13 @@ def render_to_video_ffmpeg(data, key, output_path, framerate=24):
         shutil.rmtree(temp_dir) # Clean up temporary frames
 
 
+def sample_color(value_range):
+    """Samples a random RGB color, returning an RGBA list [r, g, b, 1.0]."""
+    r = random.uniform(value_range[0], value_range[1])
+    g = random.uniform(value_range[0], value_range[1])
+    b = random.uniform(value_range[0], value_range[1])
+    return [r, g, b, 1.0]
+
 def get_random_file_path_from_directory(directory):
     files = os.listdir(directory)
     file = random.choice(files)
@@ -106,7 +113,7 @@ def generate_light_path(path_type, bbox, light_radius, num_frames, padding=1.1):
     elif path_type == "FIGURE_EIGHT":
         x = center[0] + orbit_radius * np.cos(angles)
         y = center[1] + orbit_radius * np.sin(2 * angles) / 2
-        z = center[2] + orbit_radius * np.sin(angles) / 2
+        z = center[2] + orbit_radius * np.sin(angles) / 3
 
     else:
         raise ValueError(f"Unknown light path type: {path_type}")
@@ -114,18 +121,24 @@ def generate_light_path(path_type, bbox, light_radius, num_frames, padding=1.1):
     # Stack the x, y, z arrays into a single (num_frames, 3) array
     return np.column_stack((x, y, z))
     # Stack the x, y, z
-def generate_camera_path(num_frames, radius, center=[0,0,0], angle_range=[0, 360], camera_height=1.0):
+def generate_camera_path(num_frames, radius, center=[0,0,0], angle_range=[0, 360], camera_height=[1.0, 1.0]):
     """Generates a list of camera poses for an orbit path between a start and end angle."""
     poses = []
     # Generate angles from start_angle to end_angle
-    angles = np.linspace(np.radians(angle_range[0]), np.radians(angle_range[1]), num_frames)
+    start_angle = np.random.uniform(angle_range[0], angle_range[1])
+    end_angle = np.random.uniform(angle_range[0], angle_range[1])
+    start_height = np.random.uniform(camera_height[0], camera_height[1])
+    end_height = np.random.uniform(camera_height[0], camera_height[1])
+        
+    angles = np.linspace(np.radians(start_angle), np.radians(end_angle), num_frames)
+    heights = np.linspace(start_height, end_height, num_frames)
 
-    for angle in angles:
+    for i, angle in enumerate(angles):
         # Calculate camera location on the circle
         x = center[0] + radius * np.cos(angle)
         y = center[1] + radius * np.sin(angle)
         # Add some height variation for a more dynamic path
-        z = camera_height
+        z = heights[i]
         
         location = np.array([x, y, z])
         

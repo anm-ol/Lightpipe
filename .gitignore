@@ -1,6 +1,12 @@
 materials/*
 hdris/*
+indoor_hdris/*
+indoor/hdris/*
 __pycache__/
 *.pyc
 *.blend
 *.mp4
+*.png
+*.jpg
+*.jpeg
+*.hdr
