@@ -1,5 +1,5 @@
 project:
-  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset_v3/"
+  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset_v4/"
   seed: 10 # A new seed for a new set of results
 
 assets:
@@ -9,7 +9,7 @@ assets:
   hdri_dir: "/mnt/data/anmol/Lightpipe/indoor/hdris"
 
 settings:
-  num_videos: 50 # Increased number of videos to generate
+  num_videos: 64 # Increased number of videos to generate
   frames_per_video: 77 # Increased frames for smoother animations
   resolution:
     width: 1200

@@ -95,9 +95,52 @@ def main_pipeline(config_path):
     np.random.seed(master_seed)
     os.environ['BLENDER_PROC_RANDOM_SEED'] = str(master_seed)
     
+    # Get dataset split configuration
+    dataset_config = config['settings'].get('dataset_split', {})
+    train_ratio = dataset_config.get('train_ratio', 0.8)
+    ensure_disjoint = dataset_config.get('ensure_disjoint_assets', True)
+    
     num_videos = config['settings']['num_videos']
-    object_paths = get_data_paths(config['assets']['objects_dir'], length=num_videos)
-    material_paths = get_data_paths(config['assets']['materials_dir'], length=num_videos)
+    
+    if ensure_disjoint:
+        # Split assets into train and validation sets
+        print("Splitting assets into train and validation sets...")
+        asset_split = split_assets_for_dataset(
+            config['assets']['objects_dir'],
+            config['assets']['materials_dir'], 
+            config['assets']['hdri_dir'],
+            train_ratio,
+            master_seed
+        )
+        
+        # Calculate number of videos for each split
+        num_train_videos = int(num_videos * train_ratio)
+        num_val_videos = num_videos - num_train_videos
+        
+        # Print dataset split summary
+        print_dataset_split_summary(asset_split, num_train_videos, num_val_videos)
+        
+        # Sample assets for each split
+        train_assets = sample_assets_for_videos(asset_split, 'train', num_train_videos, master_seed)
+        val_assets = sample_assets_for_videos(asset_split, 'val', num_val_videos, master_seed + 1)
+        
+        # Combine splits for processing
+        splits_to_process = [
+            ('train', num_train_videos, train_assets),
+            ('val', num_val_videos, val_assets)
+        ]
+    else:
+        # Original behavior - no asset separation
+        object_paths = get_data_paths(config['assets']['objects_dir'], length=num_videos)
+        material_paths = get_data_paths(config['assets']['materials_dir'], length=num_videos)
+        # For HDRIs, we'll handle them per video as before
+        splits_to_process = [
+            ('train', num_videos, {
+                'objects': object_paths,
+                'materials': material_paths,
+                'hdris': []  # Will be sampled per video
+            })
+        ]
     #(num_frames: Unknown, radius: Unknown, center: Unknown = [0, 0, 0],
     # start_angle: int = 0, end_angle: float = 2 * np.pi) -> list[Unknown]
     camera_settings = config['settings']['camera_settings']
@@ -110,63 +153,74 @@ def main_pipeline(config_path):
     bproc.renderer.set_denoiser('OPTIX')
     bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
     
-
-    for i in range(num_videos):
-        print(f"--- Generating Video {i+1}/{num_videos} ---")
-
-        bproc.object.delete_multiple(bproc.object.get_all_mesh_objects()) # type: ignore
-
-        height = config['settings']['resolution']['height']
-        width = config['settings']['resolution']['width']
-        bproc.camera.set_resolution(width, height)  # Set camera resolution
-
-        # Sample all random parameters for this video
-        obj_path = object_paths[i]
-        material_path = material_paths[i]
-        print(f"  Loading object from: {obj_path}")
-        print(f"  Loading material from: {material_path}")
-        if os.path.exists(os.path.join(obj_path, 'hdris')):
-            hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
-        else:
-            hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
-        #hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
-        rand = config['randomization']
-        light_radius = sample_float(rand['orbit_radius_range'])
-        path_type = sample_from_list(rand['path_types'])
-        color_variation = rand['light_properties']['color_variation']
-        intensity = sample_float(rand['light_properties']['intensity_range'])
-
-        # Create the dynamic light and set its animation path
-        print(hdri_path)
-        scene = setup_scene(asset_mgr, obj_path, material_path, hdri_path)
-        main_obj = scene['main_obj']
-        plane = scene['plane']
-
-        light_sphere = setup_light(asset_mgr, sample_color([0.3, 1.0]), intensity)
-        light_path = generate_light_path(path_type, main_obj.get_bound_box(), light_radius, num_frames)
-        print(len(light_path), light_path[0], light_path[-1])
-        poi = bproc.object.compute_poi([main_obj]) + [0, 0, 0.8]
-        camera_path = generate_camera_path(
-        num_frames=num_frames,
-        radius=camera_settings['orbit_radius'],
-        center=poi,
-        angle_range=camera_settings['angle_range'],
-        camera_height=camera_settings['camera_height']
-    )
-        animate_scene(light_sphere, light_path, camera_path)
+    # Process each split (train and/or val)
+    for split_name, split_num_videos, split_assets in splits_to_process:
+        print(f"\n=== Processing {split_name.upper()} split ===")
         
-        # Render all keyframed data into memory
-        print("  Rendering animation data...")
-        data = bproc.renderer.render()
-        
-        # Save the rendered data to video files
-        output_base = config['project']['output_base_path']
+        # Create output directory for this split
+        output_base = os.path.join(config['project']['output_base_path'], split_name)
         os.makedirs(output_base, exist_ok=True)
-        color_vid_path = os.path.join(output_base, f"{i:04d}_color.mp4")
-        depth_vid_path = os.path.join(output_base, f"{i:04d}_depth.mp4")
+        
+        for i in range(split_num_videos):
+            print(f"--- Generating {split_name.upper()} Video {i+1}/{split_num_videos} ---")
 
-        render_to_video_ffmpeg(data, key='colors', output_path=color_vid_path)
-        render_to_video_ffmpeg(data, key='depth', output_path=depth_vid_path)
+            bproc.object.delete_multiple(bproc.object.get_all_mesh_objects()) # type: ignore
+
+            height = config['settings']['resolution']['height']
+            width = config['settings']['resolution']['width']
+            bproc.camera.set_resolution(width, height)  # Set camera resolution
+
+            # Sample all random parameters for this video
+            obj_path = split_assets['objects'][i]
+            material_path = split_assets['materials'][i]
+            print(f"  Loading object from: {obj_path}")
+            print(f"  Loading material from: {material_path}")
+            
+            # Handle HDRI selection
+            if ensure_disjoint and split_assets['hdris']:
+                hdri_path = split_assets['hdris'][i]
+            else:
+                # Fallback to original HDRI selection logic
+                if os.path.exists(os.path.join(obj_path, 'hdris')):
+                    hdri_path = bproc.loader.get_random_world_background_hdr_img_path_from_haven(config['assets']['hdri_dir'])
+                else:
+                    hdri_path = get_random_hdri_path(config['assets']['hdri_dir'])
+            
+            rand = config['randomization']
+            light_radius = sample_float(rand['orbit_radius_range'])
+            path_type = sample_from_list(rand['path_types'])
+            color_variation = rand['light_properties']['color_variation']
+            intensity = sample_float(rand['light_properties']['intensity_range'])
+
+            # Create the dynamic light and set its animation path
+            print(f"  Using HDRI: {hdri_path}")
+            scene = setup_scene(asset_mgr, obj_path, material_path, hdri_path)
+            main_obj = scene['main_obj']
+            plane = scene['plane']
+
+            light_sphere = setup_light(asset_mgr, sample_color([0.3, 1.0]), intensity)
+            light_path = generate_light_path(path_type, main_obj.get_bound_box(), light_radius, num_frames)
+            print(len(light_path), light_path[0], light_path[-1])
+            poi = bproc.object.compute_poi([main_obj]) + [0, 0, 0.8]
+            camera_path = generate_camera_path(
+            num_frames=num_frames,
+            radius=camera_settings['orbit_radius'],
+            center=poi,
+            angle_range=camera_settings['angle_range'],
+            camera_height=camera_settings['camera_height']
+        )
+            animate_scene(light_sphere, light_path, camera_path)
+            
+            # Render all keyframed data into memory
+            print("  Rendering animation data...")
+            data = bproc.renderer.render()
+            
+            # Save the rendered data to video files in the appropriate split directory
+            color_vid_path = os.path.join(output_base, f"{i:04d}_color.mp4")
+            depth_vid_path = os.path.join(output_base, f"{i:04d}_depth.mp4")
+
+            render_to_video_ffmpeg(data, key='colors', output_path=color_vid_path)
+            render_to_video_ffmpeg(data, key='depth', output_path=depth_vid_path)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Lightpipe video generation pipeline.")

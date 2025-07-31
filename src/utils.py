@@ -206,6 +206,135 @@ def get_data_paths(data_dir, length):
     return random.sample(dirs, length)
 
 
+def get_all_data_paths(data_dir):
+    """Gets all available data paths from a directory."""
+    dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    return dirs
+
+
+def get_all_hdri_paths(hdri_dir):
+    """Gets all HDRI file paths from a directory."""
+    hdri_files = [os.path.join(hdri_dir, f) for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
+    return hdri_files
+
+
+def split_assets_for_dataset(objects_dir, materials_dir, hdri_dir, train_ratio, seed):
+    """
+    Splits assets into train and validation sets ensuring no overlap.
+    
+    Args:
+        objects_dir: Directory containing object files
+        materials_dir: Directory containing material files  
+        hdri_dir: Directory containing HDRI files
+        train_ratio: Ratio of assets to use for training (0.0 to 1.0)
+        seed: Random seed for reproducible splits
+        
+    Returns:
+        Dictionary containing train and val asset paths
+    """
+    # Set random seed for reproducible splits
+    random.seed(seed)
+    np.random.seed(seed)
+    
+    # Get all available assets
+    all_objects = get_all_data_paths(objects_dir)
+    all_materials = get_all_data_paths(materials_dir)
+    all_hdris = get_all_hdri_paths(hdri_dir)
+    
+    # Shuffle assets
+    random.shuffle(all_objects)
+    random.shuffle(all_materials)
+    random.shuffle(all_hdris)
+    
+    # Calculate split indices
+    train_obj_count = int(len(all_objects) * train_ratio)
+    train_mat_count = int(len(all_materials) * train_ratio)
+    train_hdri_count = int(len(all_hdris) * train_ratio)
+    
+    # Split assets
+    train_objects = all_objects[:train_obj_count]
+    val_objects = all_objects[train_obj_count:]
+    
+    train_materials = all_materials[:train_mat_count]
+    val_materials = all_materials[train_mat_count:]
+    
+    train_hdris = all_hdris[:train_hdri_count]
+    val_hdris = all_hdris[train_hdri_count:]
+    
+    return {
+        'train': {
+            'objects': train_objects,
+            'materials': train_materials,
+            'hdris': train_hdris
+        },
+        'val': {
+            'objects': val_objects,
+            'materials': val_materials,
+            'hdris': val_hdris
+        }
+    }
+
+
+def sample_assets_for_videos(asset_split, split_type, num_videos, seed):
+    """
+    Samples assets for a specific number of videos from the given split.
+    
+    Args:
+        asset_split: Dictionary from split_assets_for_dataset
+        split_type: 'train' or 'val'
+        num_videos: Number of videos to generate
+        seed: Random seed for sampling
+        
+    Returns:
+        Dictionary with sampled object, material, and hdri paths
+    """
+    random.seed(seed)
+    
+    assets = asset_split[split_type]
+    
+    # Sample with replacement if we need more videos than available assets
+    object_paths = random.choices(assets['objects'], k=num_videos)
+    material_paths = random.choices(assets['materials'], k=num_videos)
+    hdri_paths = random.choices(assets['hdris'], k=num_videos)
+    
+    return {
+        'objects': object_paths,
+        'materials': material_paths,
+        'hdris': hdri_paths
+    }
+
+
+def print_dataset_split_summary(asset_split, num_train_videos, num_val_videos):
+    """
+    Prints a summary of the dataset split configuration.
+    """
+    print("\n" + "="*60)
+    print("DATASET SPLIT SUMMARY")
+    print("="*60)
+    
+    print(f"Training Split:")
+    print(f"  - Videos: {num_train_videos}")
+    print(f"  - Objects: {len(asset_split['train']['objects'])}")
+    print(f"  - Materials: {len(asset_split['train']['materials'])}")
+    print(f"  - HDRIs: {len(asset_split['train']['hdris'])}")
+    
+    print(f"\nValidation Split:")
+    print(f"  - Videos: {num_val_videos}")
+    print(f"  - Objects: {len(asset_split['val']['objects'])}")
+    print(f"  - Materials: {len(asset_split['val']['materials'])}")
+    print(f"  - HDRIs: {len(asset_split['val']['hdris'])}")
+    
+    print(f"\nTotal Assets:")
+    total_objects = len(asset_split['train']['objects']) + len(asset_split['val']['objects'])
+    total_materials = len(asset_split['train']['materials']) + len(asset_split['val']['materials'])
+    total_hdris = len(asset_split['train']['hdris']) + len(asset_split['val']['hdris'])
+    
+    print(f"  - Objects: {total_objects}")
+    print(f"  - Materials: {total_materials}")
+    print(f"  - HDRIs: {total_hdris}")
+    print("="*60 + "\n")
+
+
 def get_random_hdri_path(hdri_dir):
     """Gets a random HDRI file path from a directory."""
     hdri_files = [f for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
