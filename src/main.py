@@ -66,12 +66,20 @@ def setup_scene(asset_mgr, obj_path, material_path, hdri_path):
     main_obj.set_location([location[0], location[1], location[2] - min_z + offset])
     return {"main_obj": main_obj, "plane": plane}
 
-def setup_light(asset_mgr, color, intensity, radius=0.15):
+def setup_light(asset_mgr, color, intensity, radius=0.15, visible=True):
     """Creates the dynamic light source for the scene."""
-    light_sphere = bproc.object.create_primitive("SPHERE", radius=radius)
-    light_mat = asset_mgr.create_emissive_material(color, intensity)
     
-    light_sphere.add_material(light_mat)
+    if visible:
+        light_sphere = bproc.object.create_primitive("SPHERE", radius=radius)
+        light_mat = asset_mgr.create_emissive_material(color, intensity)
+        light_sphere.add_material(light_mat)
+    else:
+        color = color[:3]
+        light_sphere = bproc.types.Light()
+        light_sphere.set_type("POINT")
+        light_sphere.set_color(color)
+        light_sphere.set_energy(intensity)
+    
     return light_sphere
 
 def animate_scene(light_sphere, light_path, camera_path=None):
@@ -151,7 +159,8 @@ def main_pipeline(config_path):
     bproc.renderer.set_render_devices(use_only_cpu=False, desired_gpu_device_type='CUDA', desired_gpu_ids=[0, 1, 2])
     bproc.renderer.set_max_amount_of_samples(16)
     bproc.renderer.set_denoiser('OPTIX')
-    bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
+    if config['settings'].get('enable_depth', True):
+        bproc.renderer.enable_depth_output(activate_antialiasing=False) # Enable depth capture
     
     # Process each split (train and/or val)
     for split_name, split_num_videos, split_assets in splits_to_process:
@@ -198,17 +207,20 @@ def main_pipeline(config_path):
             main_obj = scene['main_obj']
             plane = scene['plane']
 
-            light_sphere = setup_light(asset_mgr, sample_color([0.3, 1.0]), intensity)
+            is_visible = config['settings']['light']['visible']
+            light_sphere = setup_light(asset_mgr, sample_color([0.3, 1.0]), intensity, visible=is_visible)
+            #if not is_visible:
+            #    light_sphere.hide()               
             light_path = generate_light_path(path_type, main_obj.get_bound_box(), light_radius, num_frames)
-            print(len(light_path), light_path[0], light_path[-1])
+            #print(len(light_path), light_path[0], light_path[-1])
             poi = bproc.object.compute_poi([main_obj]) + [0, 0, 0.8]
             camera_path = generate_camera_path(
-            num_frames=num_frames,
-            radius=camera_settings['orbit_radius'],
-            center=poi,
-            angle_range=camera_settings['angle_range'],
-            camera_height=camera_settings['camera_height']
-        )
+                num_frames=num_frames,
+                radius=camera_settings['orbit_radius'],
+                center=poi,
+                angle_range=camera_settings['angle_range'],
+                camera_height=camera_settings['camera_height']
+            )
             animate_scene(light_sphere, light_path, camera_path)
             
             # Render all keyframed data into memory

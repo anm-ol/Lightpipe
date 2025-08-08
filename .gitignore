@@ -10,3 +10,7 @@ __pycache__/
 *.jpg
 *.jpeg
 *.hdr
+*.exr
+assets/DecorativeModels/*
+assets/materials/*
+assets/indoor/hdris/*

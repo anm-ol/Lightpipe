@@ -1,19 +1,20 @@
 project:
-  output_base_path: "/mnt/data/anmol/Lightpipe/output/dataset_v1/"
+  output_base_path: "/mnt/venky/ankitd/anmol/new_vace_training/Lightpipe/output/dataset_v0_hidden/"
   seed: 10 # A new seed for a new set of results
 
 assets:
   # Asset paths are specific to your machine, so they remain unchanged.
-  objects_dir: "/mnt/data/anmol/DecorativeModels/"
-  materials_dir: "/mnt/data/anmol/Lightpipe/materials/"
-  hdri_dir: "/mnt/data/anmol/Lightpipe"
+  objects_dir: "/mnt/venky/ankitd/anmol/new_vace_training/Lightpipe/assets/DecorativeModels"
+  materials_dir: "/mnt/venky/ankitd/anmol/new_vace_training/Lightpipe/assets/materials"
+  hdri_dir: "/mnt/venky/ankitd/anmol/new_vace_training/Lightpipe/assets/indoor/hdris"
 
 settings:
-  num_videos: 50 # Increased number of videos to generate
+  num_videos: 80 # Increased number of videos to generate
   frames_per_video: 77 # Increased frames for smoother animations
+  enable_depth: false
   resolution:
-    width: 1200
-    height: 800
+    width: 900
+    height: 600
   # Train/Validation split configuration
   dataset_split:
     train_ratio: 0.8 # 80% for training, 20% for validation
@@ -25,7 +26,9 @@ settings:
     angle_range: [-60, 60] # Vertical angle range for camera
     orbit_radius: 8.0 # Radius for camera orbit around the scene
     camera_height: [1.0, 3.0] # Height of the camera above the ground
-
+  light:
+    type: "point" # Type of light source
+    visible: false # Whether the light is visible in the scene
 randomization:
   # Each light path is now an object with its own parameters for more control.
   path_types:
@@ -36,5 +39,5 @@ randomization:
   orbit_radius_range: [1.0, 1.5] # Range for orbit radius
   height_variation: 0.5
   light_properties:
-    intensity_range: [1000, 2000] # Range for light intensity
+    intensity_range: [200, 800] # Range for light intensity
     color_variation: [0.8, 1.2] # Variation factor for light color
