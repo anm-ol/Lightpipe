@@ -13,7 +13,10 @@ def render_to_video_ffmpeg(data, key, output_path, framerate=24):
         print(f"Warning: No data found for key '{key}'. Skipping video generation.")
         return
 
-    temp_dir = f"temp_frames_{key}_{random.randint(0, 9999)}"
+    # Create deterministic temp directory name based on output path to avoid conflicts
+    import hashlib
+    path_hash = hashlib.md5(output_path.encode()).hexdigest()[:8]
+    temp_dir = f"temp_frames_{key}_{path_hash}"
     os.makedirs(temp_dir, exist_ok=True)
     
     try:
@@ -203,18 +206,24 @@ def get_random_object_path(objects_dir):
 def get_data_paths(data_dir, length):
     all_files = []
     dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    # Sort to ensure deterministic order before sampling
+    dirs.sort()
     return random.sample(dirs, length)
 
 
 def get_all_data_paths(data_dir):
     """Gets all available data paths from a directory."""
     dirs = [os.path.join(data_dir, d, f'{d}_2k', f'{d}_2k.blend') for d in os.listdir(data_dir) if os.path.isdir(os.path.join(data_dir, d))]
+    # Sort to ensure deterministic order
+    dirs.sort()
     return dirs
 
 
 def get_all_hdri_paths(hdri_dir):
     """Gets all HDRI file paths from a directory."""
     hdri_files = [os.path.join(hdri_dir, f) for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
+    # Sort to ensure deterministic order
+    hdri_files.sort()
     return hdri_files
 
 
@@ -340,4 +349,6 @@ def get_random_hdri_path(hdri_dir):
     hdri_files = [f for f in os.listdir(hdri_dir) if f.endswith('.hdr')]
     if not hdri_files:
         raise ValueError(f"No .hdr files found in {hdri_dir}")
+    # Sort to ensure deterministic order before selection
+    hdri_files.sort()
     return os.path.join(hdri_dir, random.choice(hdri_files))

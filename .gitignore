@@ -14,3 +14,5 @@ __pycache__/
 assets/DecorativeModels/*
 assets/materials/*
 assets/indoor/hdris/*
+slurm_error_12903.log slurm_error_12906.log slurm_output_12903.log slurm_output_12906.log
+*.log
